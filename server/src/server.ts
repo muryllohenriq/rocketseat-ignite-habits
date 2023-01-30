@@ -2,6 +2,7 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors'
 import { appRoutes } from "./routes";
+import { notificationRoutes } from "./notifications-routes";
 
 // cria a aplicação
 const app = Fastify()
@@ -10,6 +11,8 @@ const app = Fastify()
 app.register(cors)
 
 app.register(appRoutes)
+
+app.register(notificationRoutes)
 
 // agora usa o método listen para que a nossa aplicação ouça a porta 3333
 app.listen({

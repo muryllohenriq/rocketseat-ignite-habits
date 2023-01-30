@@ -1,8 +1,32 @@
-import { Header } from './components/Header'
-import './lib/dayjs'
-import { SummaryTable } from './components/SummaryTable'
 import './styles/global.css'
-// import { Habit } from "./components/Habit"
+import './lib/dayjs'
+import { Header } from './components/Header'
+import { SummaryTable } from './components/SummaryTable'
+import { api } from './lib/axios'
+
+navigator.serviceWorker.register('service-worker.js')
+  .then(async serviceWorker => {
+    // subscription é a assinatura do usuário com o serviço de notificações
+    let subscription = await serviceWorker.pushManager.getSubscription()
+
+    // se não tiver uma inscrição ativa, cria uma nova
+    if (!subscription) {
+      const publicKeyResponse = await api.get('/push/public_key')
+
+      subscription = await serviceWorker.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicKeyResponse.data.publicKey,
+      })
+    }
+
+    await api.post('/push/register', {
+      subscription,
+    })
+
+    await api.post('/push/send', {
+      subscription,
+    })
+  })
 
 export default function App() {
   return (
